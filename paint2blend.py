@@ -3,7 +3,7 @@ bl_info = {
     "author": "myuu-151",
     "version": (1, 0),
     "blender": (4, 4, 0),
-    "location": "3D View sidebar > Bitmask",
+    "location": "3D View sidebar > Paint2Blend",
     "description": "Two-texture terrain blending through a painted 1024x1024 "
                    "bitmask: assign a base texture (UV1) and an overlay texture "
                    "(UV2), press Paint Bitmap and brush the overlay in directly.",
@@ -213,10 +213,10 @@ class BMP_OT_edit_uv(bpy.types.Operator):
 
 # ------------------------------------------------------------------- panel
 class BMP_PT_panel(bpy.types.Panel):
-    bl_label = "Bitmask Paint"
+    bl_label = "Paint2Blend"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_category = "Bitmask"
+    bl_category = "Paint2Blend"
 
     def draw(self, context):
         scn = context.scene
