@@ -156,26 +156,34 @@ class BMP_OT_paint(bpy.types.Operator):
 
 
 class BMP_OT_save(bpy.types.Operator):
-    """Save the active object's bitmask image to disk"""
+    """Save the active object's bitmask image - pick where with a file browser"""
     bl_idname = "paint.bmp_save_bitmap"
-    bl_label = "Save Bitmap"
+    bl_label = "Save Bitmap As"
+
+    filepath: bpy.props.StringProperty(subtype='FILE_PATH')
+    filter_glob: bpy.props.StringProperty(default="*.png", options={'HIDDEN'})
 
     @classmethod
     def poll(cls, context):
         return (context.object and
                 bpy.data.images.get(context.object.name + "_Bitmask") is not None)
 
+    def invoke(self, context, event):
+        img = bpy.data.images[context.object.name + "_Bitmask"]
+        base = os.path.dirname(bpy.data.filepath) if bpy.data.filepath else ""
+        self.filepath = img.filepath_raw or os.path.join(base, img.name + ".png")
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
     def execute(self, context):
         img = bpy.data.images[context.object.name + "_Bitmask"]
-        if not img.filepath_raw:
-            base = os.path.dirname(bpy.data.filepath) if bpy.data.filepath else ""
-            if not base:
-                self.report({'ERROR'}, "Save the .blend first so the mask has a home")
-                return {'CANCELLED'}
-            img.filepath_raw = os.path.join(base, img.name + ".png")
-            img.file_format = 'PNG'
+        path = self.filepath
+        if not path.lower().endswith(".png"):
+            path += ".png"
+        img.filepath_raw = path
+        img.file_format = 'PNG'
         img.save()
-        self.report({'INFO'}, "Saved " + img.filepath_raw)
+        self.report({'INFO'}, "Saved " + path)
         return {'FINISHED'}
 
 
